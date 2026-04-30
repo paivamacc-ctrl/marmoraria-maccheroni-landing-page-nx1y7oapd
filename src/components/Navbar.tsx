@@ -36,7 +36,7 @@ export function Navbar() {
               isScrolled ? 'text-elegant' : 'text-white'
             }`}
           >
-            Maccheroni
+            Marmoraria Maccheroni
           </a>
 
           {/* Desktop Nav */}
@@ -83,7 +83,7 @@ export function Navbar() {
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-[60] bg-beige flex flex-col p-6 animate-in slide-in-from-right-full duration-300">
           <div className="flex justify-between items-center mb-12">
-            <span className="font-serif text-2xl text-elegant">Maccheroni</span>
+            <span className="font-serif text-2xl text-elegant">Marmoraria Maccheroni</span>
             <button onClick={() => setMobileMenuOpen(false)}>
               <X className="w-8 h-8 text-elegant" />
             </button>
