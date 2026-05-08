@@ -12,7 +12,6 @@ export function SocialProofSection() {
     'Hurben',
     'Studio Arthur Casas',
     'Sig Bergamin',
-    'Dado Castello Branco',
     'Triplex Arquitetura',
   ]
 
