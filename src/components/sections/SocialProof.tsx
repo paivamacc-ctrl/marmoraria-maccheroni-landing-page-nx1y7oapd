@@ -7,7 +7,7 @@ export function SocialProofSection() {
   ]
 
   const logos = [
-    'Stefani Nogueira',
+    'Construtora Stéfani Nogueira',
     'Bild',
     'Hurben',
     'Studio Arthur Casas',
