@@ -14,8 +14,8 @@ export function FAQSection() {
       a: 'O Mármore é uma rocha calcária, mais porosa e elegante, ideal para áreas internas e banheiros. O Granito é altamente resistente e durável, perfeito para cozinhas e áreas externas. O Quartzo é uma superfície industrializada não porosa, oferecendo cores uniformes e alta resistência a manchas.',
     },
     {
-      q: 'Voçês atendem a região?',
-      a: 'Sim. Nossa logística nos permite atender obras em um raio de até 150km de nossa sede, garantindo a mesma qualidade de transporte e instalação da capital.',
+      q: 'Vocês atendem a região?',
+      a: 'Sim. Nossa logística nos permite atender obras em um raio de até 150km de nossa sede.',
     },
     {
       q: 'Qual o prazo médio de execução?',
