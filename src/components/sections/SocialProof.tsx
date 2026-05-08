@@ -6,13 +6,7 @@ export function SocialProofSection() {
     { value: '150km', label: 'Raio de Atendimento' },
   ]
 
-  const logos = [
-    'Bild',
-    'Hurben',
-    'Construtora Stéfani Nogueira',
-    'Sig Bergamin',
-    'Triplex Arquitetura',
-  ]
+  const logos = ['Bild', 'Hurben', 'Construtora Stéfani Nogueira', 'Engimov', 'Triplex Arquitetura']
 
   return (
     <section className="bg-grey py-24 overflow-hidden text-white relative">
