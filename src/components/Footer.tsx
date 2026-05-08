@@ -24,8 +24,10 @@ export function Footer() {
               <span>marmorariamaccheroni@hotmail.com</span>
             </a>
             <div className="flex items-center gap-3">
-              <MapPin className="w-4 h-4 text-gold" />
-              <span>Av. Europa, 1500 - São Paulo, SP</span>
+              <MapPin className="w-4 h-4 text-gold shrink-0" />
+              <span>
+                Av. Major Hilário Tavares Pinheiro, 2655 - Prq. Industrial - Jaboticabal - SP
+              </span>
             </div>
           </div>
         </div>
