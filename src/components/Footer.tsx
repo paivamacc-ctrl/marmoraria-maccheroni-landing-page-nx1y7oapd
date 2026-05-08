@@ -16,15 +16,13 @@ export function Footer() {
               <Phone className="w-4 h-4 text-gold" />
               <span>(16) 99770-7446</span>
             </div>
-            <div className="flex items-center gap-3">
-              <Mail className="w-4 h-4 text-gold" />
-              <a
-                href="mailto:marmorariamaccheroni@hotmail.com"
-                className="hover:text-gold transition-colors"
-              >
-                marmorariamaccheroni@hotmail.com
-              </a>
-            </div>
+            <a
+              href="mailto:marmorariamaccheroni@hotmail.com"
+              className="flex items-center gap-3 hover:text-gold transition-colors"
+            >
+              <Mail className="w-4 h-4 transition-colors" />
+              <span>marmorariamaccheroni@hotmail.com</span>
+            </a>
             <div className="flex items-center gap-3">
               <MapPin className="w-4 h-4 text-gold" />
               <span>Av. Europa, 1500 - São Paulo, SP</span>
