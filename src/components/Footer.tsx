@@ -71,13 +71,16 @@ export function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
-              className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-elegant hover:bg-gold hover:text-white transition-colors border border-border"
+              className="relative z-10 w-10 h-10 rounded-full bg-white flex items-center justify-center text-elegant hover:bg-gold hover:text-white transition-colors border border-border"
             >
               <Instagram className="w-5 h-5" />
             </a>
             <a
               href="#"
-              className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-elegant hover:bg-gold hover:text-white transition-colors border border-border"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+              className="relative z-10 w-10 h-10 rounded-full bg-white flex items-center justify-center text-elegant hover:bg-gold hover:text-white transition-colors border border-border"
             >
               <Linkedin className="w-5 h-5" />
             </a>
