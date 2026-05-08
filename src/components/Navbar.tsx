@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Menu, X } from 'lucide-react'
-import { LeadModal } from './LeadModal'
-import { Button } from './ui/button'
+import { buttonVariants } from './ui/button'
+import { cn } from '@/lib/utils'
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -58,18 +58,20 @@ export function Navbar() {
           </nav>
 
           <div className="hidden md:block">
-            <LeadModal>
-              <Button
-                variant={isScrolled ? 'default' : 'outline'}
-                className={`transition-all duration-300 ${
-                  isScrolled
-                    ? 'bg-elegant text-white hover:bg-gold'
-                    : 'bg-transparent border-white text-white hover:bg-white hover:text-elegant'
-                }`}
-              >
-                Conversar com Especialista
-              </Button>
-            </LeadModal>
+            <a
+              href="https://api.whatsapp.com/send?phone=55XXXXXXXXXXX&text=Ol%C3%A1%21%20Gostaria%20de%20falar%20com%20um%20especialista."
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                buttonVariants({ variant: isScrolled ? 'default' : 'outline' }),
+                'transition-all duration-300',
+                isScrolled
+                  ? 'bg-elegant text-white hover:bg-gold'
+                  : 'bg-transparent border-white text-white hover:bg-white hover:text-elegant',
+              )}
+            >
+              Conversar com Especialista
+            </a>
           </div>
 
           {/* Mobile Toggle */}
@@ -101,11 +103,17 @@ export function Navbar() {
             ))}
           </nav>
           <div className="mt-auto pb-8">
-            <LeadModal>
-              <Button className="w-full bg-elegant text-white py-6 text-lg hover:bg-gold">
-                Conversar com Especialista
-              </Button>
-            </LeadModal>
+            <a
+              href="https://api.whatsapp.com/send?phone=55XXXXXXXXXXX&text=Ol%C3%A1%21%20Gostaria%20de%20falar%20com%20um%20especialista."
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                buttonVariants(),
+                'w-full bg-elegant text-white py-6 text-lg hover:bg-gold',
+              )}
+            >
+              Conversar com Especialista
+            </a>
           </div>
         </div>
       )}

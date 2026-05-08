@@ -1,5 +1,5 @@
-import { LeadModal } from '../LeadModal'
-import { Button } from '../ui/button'
+import { buttonVariants } from '../ui/button'
+import { cn } from '@/lib/utils'
 
 const projects = [
   {
@@ -57,14 +57,17 @@ export function ProjectsSection() {
             </span>
             <h2 className="font-serif text-3xl md:text-5xl text-elegant">Projetos Executados</h2>
           </div>
-          <LeadModal>
-            <Button
-              variant="outline"
-              className="border-elegant text-elegant hover:bg-elegant hover:text-white"
-            >
-              Iniciar Meu Projeto
-            </Button>
-          </LeadModal>
+          <a
+            href="https://api.whatsapp.com/send?phone=55XXXXXXXXXXX&text=Ol%C3%A1%21%20Gostaria%20de%20iniciar%20um%20projeto."
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(
+              buttonVariants({ variant: 'outline' }),
+              'border-elegant text-elegant hover:bg-elegant hover:text-white',
+            )}
+          >
+            Iniciar Meu Projeto
+          </a>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-[250px]">

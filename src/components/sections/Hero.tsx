@@ -1,6 +1,3 @@
-import { LeadModal } from '@/components/LeadModal'
-import { Button } from '@/components/ui/button'
-
 export function HeroSection() {
   return (
     <section className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
@@ -33,14 +30,14 @@ export function HeroSection() {
         </p>
 
         <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-          <LeadModal>
-            <Button
-              size="lg"
-              className="bg-gold text-white hover:bg-white hover:text-elegant text-base px-8 py-6 transition-all duration-300 transform hover:scale-105"
-            >
-              Conversar com Especialista
-            </Button>
-          </LeadModal>
+          <a
+            href="https://api.whatsapp.com/send?phone=55XXXXXXXXXXX&text=Ol%C3%A1%21%20Gostaria%20de%20falar%20com%20um%20especialista."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium h-11 rounded-md bg-gold text-white hover:bg-white hover:text-elegant text-base px-8 py-6 transition-all duration-300 transform hover:scale-105"
+          >
+            Conversar com Especialista
+          </a>
         </div>
       </div>
 

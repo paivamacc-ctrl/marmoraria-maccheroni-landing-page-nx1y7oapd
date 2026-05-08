@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { MessageSquare, X, Send } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { LeadModal } from './LeadModal'
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 type Message = { id: number; text: string; sender: 'bot' | 'user' }
 
@@ -127,11 +127,17 @@ export function FloatingChat() {
                   </button>
                 </div>
               )}
-            <LeadModal>
-              <Button className="w-full bg-elegant hover:bg-gold text-white transition-colors">
-                Falar com Humano <Send className="w-4 h-4 ml-2" />
-              </Button>
-            </LeadModal>
+            <a
+              href="https://api.whatsapp.com/send?phone=55XXXXXXXXXXX&text=Ol%C3%A1%21%20Gostaria%20de%20falar%20com%20um%20especialista."
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                buttonVariants(),
+                'w-full bg-elegant hover:bg-gold text-white transition-colors',
+              )}
+            >
+              Falar com Humano <Send className="w-4 h-4 ml-2" />
+            </a>
           </div>
         </div>
       )}
