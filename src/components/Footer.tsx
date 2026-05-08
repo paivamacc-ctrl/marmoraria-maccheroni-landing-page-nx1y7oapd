@@ -67,7 +67,10 @@ export function Footer() {
           </p>
           <div className="flex gap-4">
             <a
-              href="#"
+              href="https://www.instagram.com/marmorariamaccheroni"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
               className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-elegant hover:bg-gold hover:text-white transition-colors border border-border"
             >
               <Instagram className="w-5 h-5" />
