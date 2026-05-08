@@ -19,7 +19,7 @@ export function FAQSection() {
     },
     {
       q: 'Qual o prazo médio de execução?',
-      a: 'O prazo varia de acordo com a complexidade do projeto. Em média, após a medição final na obra (gabarito), solicitamos de 15 a 25 dias úteis para corte, acabamento e instalação.',
+      a: 'O prazo varia de acordo com a complexidade do projeto. Em média, após a medição final na obra (gabarito), solicitamos de 15 a 25 dias úteis para corte e acabamento.',
     },
     {
       q: 'Como funciona a manutenção das pedras?',
