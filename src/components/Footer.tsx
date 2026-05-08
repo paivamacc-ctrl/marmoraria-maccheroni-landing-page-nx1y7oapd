@@ -20,7 +20,7 @@ export function Footer() {
               href="mailto:marmorariamaccheroni@hotmail.com"
               className="flex items-center gap-3 hover:text-gold transition-colors"
             >
-              <Mail className="w-4 h-4 transition-colors" />
+              <Mail className="w-4 h-4 shrink-0 transition-colors" />
               <span>marmorariamaccheroni@hotmail.com</span>
             </a>
             <div className="flex items-center gap-3">
