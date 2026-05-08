@@ -1,4 +1,4 @@
-import { Instagram, Linkedin, MapPin, Phone, Mail } from 'lucide-react'
+import { Instagram, Linkedin, Facebook, MapPin, Phone, Mail } from 'lucide-react'
 
 export function Footer() {
   return (
@@ -74,6 +74,15 @@ export function Footer() {
               className="relative z-10 w-10 h-10 rounded-full bg-white flex items-center justify-center text-elegant hover:bg-gold hover:text-white transition-colors border border-border"
             >
               <Instagram className="w-5 h-5" />
+            </a>
+            <a
+              href="https://www.facebook.com/marmorariamaccheroni"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Facebook"
+              className="relative z-10 w-10 h-10 rounded-full bg-white flex items-center justify-center text-elegant hover:bg-gold hover:text-white transition-colors border border-border"
+            >
+              <Facebook className="w-5 h-5" />
             </a>
             <a
               href="#"
