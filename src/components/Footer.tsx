@@ -76,7 +76,7 @@ export function Footer() {
               <Instagram className="w-5 h-5" />
             </a>
             <a
-              href="https://www.facebook.com/marmorariamaccheroni"
+              href="https://www.facebook.com/share/1BE4AEXr95/"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Facebook"
