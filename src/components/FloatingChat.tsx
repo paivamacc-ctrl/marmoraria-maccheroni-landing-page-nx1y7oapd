@@ -128,7 +128,7 @@ export function FloatingChat() {
                 </div>
               )}
             <a
-              href="https://wa.me/5511999999999?text=Ol%C3%A1%21%20Gostaria%20de%20falar%20com%20um%20especialista."
+              href="https://wa.me/5516997707446?text=Ol%C3%A1%21%20Gostaria%20de%20falar%20com%20um%20especialista."
               target="_blank"
               rel="noopener noreferrer"
               className={cn(

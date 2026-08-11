@@ -45,7 +45,7 @@ export function LeadModal({ children }: LeadModalProps) {
 
   const getWhatsAppUrl = () => {
     const message = `Olá! Meu nome é ${name}, acabei de ver o site da Marmoraria Maccheroni e gostaria de falar com um especialista sobre um projeto.`
-    return `https://wa.me/5516999999999?text=${encodeURIComponent(message)}`
+    return `https://wa.me/5516997707446?text=${encodeURIComponent(message)}`
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

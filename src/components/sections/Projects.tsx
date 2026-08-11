@@ -58,7 +58,7 @@ export function ProjectsSection() {
             <h2 className="font-serif text-3xl md:text-5xl text-elegant">Projetos Executados</h2>
           </div>
           <a
-            href="https://api.whatsapp.com/send?phone=55XXXXXXXXXXX&text=Ol%C3%A1%21%20Gostaria%20de%20iniciar%20um%20projeto."
+            href="https://wa.me/5516997707446?text=Ol%C3%A1%21%20Gostaria%20de%20iniciar%20um%20projeto."
             target="_blank"
             rel="noopener noreferrer"
             className={cn(

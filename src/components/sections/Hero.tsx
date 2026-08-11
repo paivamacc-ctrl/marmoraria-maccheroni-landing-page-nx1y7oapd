@@ -31,7 +31,7 @@ export function HeroSection() {
 
         <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
           <a
-            href="https://wa.me/5511999999999?text=Ol%C3%A1%21%20Gostaria%20de%20falar%20com%20um%20especialista."
+            href="https://wa.me/5516997707446?text=Ol%C3%A1%21%20Gostaria%20de%20falar%20com%20um%20especialista."
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium h-11 rounded-md bg-gold text-white hover:bg-white hover:text-elegant text-base px-8 py-6 transition-all duration-300 transform hover:scale-105"
