@@ -1,4 +1,5 @@
 import pb from '@/lib/pocketbase/client'
+import type { AgentCitation } from '@/lib/skipAi'
 
 export interface StreamChatHandlers {
   onChunk?: (deltaText: string, accumulatedText: string) => void
@@ -27,7 +28,7 @@ export async function streamChat(
     signal: handlers.signal,
   })
 
-  const { streamAgentChat, type AgentCitation } = await import('@/lib/skipAi')
+  const { streamAgentChat } = await import('@/lib/skipAi')
 
   const result = await streamAgentChat(res, {
     onChunk: handlers.onChunk,
