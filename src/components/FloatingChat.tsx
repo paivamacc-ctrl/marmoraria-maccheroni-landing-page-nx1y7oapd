@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Bot, X, Send } from 'lucide-react'
+import { Bot, X, Send, Volume2, Square } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
@@ -13,15 +13,46 @@ const SUGGESTIONS = [
   'Qual o prazo de entrega?',
 ]
 
+const MESSAGE_FONT_SIZE = '1.05rem'
+const HEADER_FONT_SIZE = '1.05rem'
+const PLACEHOLDER_FONT_SIZE = '1.05rem'
+
+function selectPtBrFemaleVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null {
+  if (voices.length === 0) return null
+
+  const ptBrVoices = voices.filter(
+    (v) => v.lang.toLowerCase() === 'pt-br' || v.lang.toLowerCase() === 'pt_br',
+  )
+  if (ptBrVoices.length > 0) {
+    const female = ptBrVoices.find((v) => /female|feminin|mulher|fem/i.test(v.name))
+    if (female) return female
+    return ptBrVoices[0]
+  }
+
+  const ptVoices = voices.filter((v) => v.lang.toLowerCase().startsWith('pt'))
+  if (ptVoices.length > 0) {
+    const female = ptVoices.find((v) => /female|feminin|mulher|fem/i.test(v.name))
+    if (female) return female
+    return ptVoices[0]
+  }
+
+  const female = voices.find((v) => /female|feminin|mulher|fem/i.test(v.name))
+  if (female) return female
+
+  return voices[0]
+}
+
 export function FloatingChat() {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [isTyping, setIsTyping] = useState(false)
   const [inputValue, setInputValue] = useState('')
   const [conversationId, setConversationId] = useState<string | null>(null)
+  const [readingMessageId, setReadingMessageId] = useState<number | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const abortRef = useRef<AbortController | null>(null)
+  const currentUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null)
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
@@ -41,10 +72,67 @@ export function FloatingChat() {
     }
   }, [messages, isTyping])
 
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel()
+      }
+    }
+  }, [])
+
+  const stopReading = useCallback(() => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.cancel()
+    }
+    currentUtteranceRef.current = null
+    setReadingMessageId(null)
+  }, [])
+
+  const toggleReadAloud = useCallback(
+    (messageId: number, text: string) => {
+      if (readingMessageId === messageId) {
+        stopReading()
+        return
+      }
+
+      if (typeof window === 'undefined' || !window.speechSynthesis) return
+
+      window.speechSynthesis.cancel()
+
+      const utterance = new SpeechSynthesisUtterance(text)
+      const voices = window.speechSynthesis.getVoices()
+      const selectedVoice = selectPtBrFemaleVoice(voices)
+      if (selectedVoice) {
+        utterance.voice = selectedVoice
+        utterance.lang = selectedVoice.lang
+      } else {
+        utterance.lang = 'pt-BR'
+      }
+      utterance.rate = 1.0
+      utterance.pitch = 1.1
+
+      utterance.onend = () => {
+        currentUtteranceRef.current = null
+        setReadingMessageId(null)
+      }
+      utterance.onerror = () => {
+        currentUtteranceRef.current = null
+        setReadingMessageId(null)
+      }
+
+      currentUtteranceRef.current = utterance
+      setReadingMessageId(messageId)
+      window.speechSynthesis.speak(utterance)
+    },
+    [readingMessageId, stopReading],
+  )
+
   const sendMessage = useCallback(
     async (text: string) => {
       const trimmed = text.trim()
       if (!trimmed || isTyping) return
+
+      stopReading()
 
       const userMsgId = Date.now()
       setMessages((prev) => [...prev, { id: userMsgId, text: trimmed, sender: 'user' }])
@@ -90,7 +178,7 @@ export function FloatingChat() {
         setTimeout(() => inputRef.current?.focus(), 100)
       }
     },
-    [isTyping, conversationId],
+    [isTyping, conversationId, stopReading],
   )
 
   const handleSuggestion = (suggestion: string) => {
@@ -104,6 +192,7 @@ export function FloatingChat() {
 
   const handleClose = () => {
     setIsOpen(false)
+    stopReading()
     if (abortRef.current) {
       abortRef.current.abort()
     }
@@ -119,7 +208,9 @@ export function FloatingChat() {
                 <Bot className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h4 className="font-medium text-sm">Assistente Maccheroni</h4>
+                <h4 className="font-medium" style={{ fontSize: HEADER_FONT_SIZE }}>
+                  Assistente Maccheroni
+                </h4>
                 <p className="text-xs text-white/70">Online agora</p>
               </div>
             </div>
@@ -139,11 +230,12 @@ export function FloatingChat() {
               >
                 <div
                   className={cn(
-                    'max-w-[80%] p-3 rounded-lg text-sm whitespace-pre-wrap break-words',
+                    'max-w-[80%] p-3 rounded-lg whitespace-pre-wrap break-words leading-relaxed',
                     msg.sender === 'user'
                       ? 'bg-gold text-white rounded-tr-none'
                       : 'bg-white border border-border text-elegant rounded-tl-none',
                   )}
+                  style={{ fontSize: MESSAGE_FONT_SIZE }}
                 >
                   {msg.text ||
                     (msg.sender === 'bot' && isTyping ? (
@@ -155,6 +247,19 @@ export function FloatingChat() {
                     ) : (
                       ''
                     ))}
+                  {msg.sender === 'bot' && msg.text && (
+                    <button
+                      onClick={() => toggleReadAloud(msg.id, msg.text)}
+                      className="ml-2 inline-flex items-center justify-center align-middle p-1 rounded text-grey hover:text-gold transition-colors"
+                      title={readingMessageId === msg.id ? 'Parar leitura' : 'Ouvir mensagem'}
+                    >
+                      {readingMessageId === msg.id ? (
+                        <Square className="w-4 h-4 fill-current animate-pulse" />
+                      ) : (
+                        <Volume2 className="w-4 h-4" />
+                      )}
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
@@ -182,6 +287,7 @@ export function FloatingChat() {
                 placeholder="Digite sua pergunta..."
                 disabled={isTyping}
                 className="flex-1"
+                style={{ fontSize: PLACEHOLDER_FONT_SIZE }}
               />
               <button
                 type="submit"
