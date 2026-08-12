@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Bot, X, Send, Volume2, Square } from 'lucide-react'
+import { Bot, X, Send, Volume2, Square, Mic } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
 
 type Message = { id: number; text: string; sender: 'bot' | 'user' }
 
@@ -68,11 +69,13 @@ export function FloatingChat() {
   const [inputValue, setInputValue] = useState('')
   const [conversationId, setConversationId] = useState<string | null>(null)
   const [readingMessageId, setReadingMessageId] = useState<number | null>(null)
-  const [isReadingInput, setIsReadingInput] = useState(false)
+  const [isListening, setIsListening] = useState(false)
+  const [speechSupported, setSpeechSupported] = useState(true)
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const abortRef = useRef<AbortController | null>(null)
   const currentUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null)
+  const recognitionRef = useRef<any>(null)
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
@@ -93,9 +96,47 @@ export function FloatingChat() {
   }, [messages, isTyping])
 
   useEffect(() => {
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    if (!SR) {
+      setSpeechSupported(false)
+      return
+    }
+    const recognition = new SR()
+    recognition.lang = 'pt-BR'
+    recognition.continuous = false
+    recognition.interimResults = true
+    recognition.onresult = (event: any) => {
+      let transcript = ''
+      for (let i = 0; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript
+      }
+      setInputValue(transcript)
+    }
+    recognition.onend = () => {
+      setIsListening(false)
+    }
+    recognition.onerror = () => {
+      setIsListening(false)
+    }
+    recognitionRef.current = recognition
+    return () => {
+      try {
+        recognition.stop()
+      } catch {
+        /* intentionally ignored */
+      }
+    }
+  }, [])
+
+  useEffect(() => {
     return () => {
       if (typeof window !== 'undefined' && window.speechSynthesis) {
         window.speechSynthesis.cancel()
+      }
+      try {
+        recognitionRef.current?.stop()
+      } catch {
+        /* intentionally ignored */
       }
     }
   }, [])
@@ -106,7 +147,6 @@ export function FloatingChat() {
     }
     currentUtteranceRef.current = null
     setReadingMessageId(null)
-    setIsReadingInput(false)
   }, [])
 
   const toggleReadAloud = useCallback(
@@ -149,44 +189,29 @@ export function FloatingChat() {
     [readingMessageId, stopReading],
   )
 
-  const toggleReadInputAloud = useCallback(() => {
-    const trimmed = inputValue.trim()
-    if (!trimmed) return
-
-    if (isReadingInput) {
-      stopReading()
+  const toggleSpeechRecognition = useCallback(() => {
+    if (!speechSupported) {
+      toast.error(
+        'A entrada por voz não é suportada neste navegador. Tente o Google Chrome ou Microsoft Edge.',
+      )
       return
     }
-
-    if (typeof window === 'undefined' || !window.speechSynthesis) return
-
-    window.speechSynthesis.cancel()
-
-    const utterance = new SpeechSynthesisUtterance(trimmed)
-    const voices = window.speechSynthesis.getVoices()
-    const selectedVoice = selectPtBrFemaleVoice(voices)
-    if (selectedVoice) {
-      utterance.voice = selectedVoice
-      utterance.lang = selectedVoice.lang
-    } else {
-      utterance.lang = 'pt-BR'
+    if (isListening) {
+      try {
+        recognitionRef.current?.stop()
+      } catch {
+        /* intentionally ignored */
+      }
+      setIsListening(false)
+      return
     }
-    utterance.rate = 1.15
-    utterance.pitch = 1.0
-
-    utterance.onend = () => {
-      currentUtteranceRef.current = null
-      setIsReadingInput(false)
+    try {
+      recognitionRef.current?.start()
+      setIsListening(true)
+    } catch {
+      /* intentionally ignored */
     }
-    utterance.onerror = () => {
-      currentUtteranceRef.current = null
-      setIsReadingInput(false)
-    }
-
-    currentUtteranceRef.current = utterance
-    setIsReadingInput(true)
-    window.speechSynthesis.speak(utterance)
-  }, [inputValue, isReadingInput, stopReading])
+  }, [isListening, speechSupported])
 
   const sendMessage = useCallback(
     async (text: string) => {
@@ -194,6 +219,11 @@ export function FloatingChat() {
       if (!trimmed || isTyping) return
 
       stopReading()
+      try {
+        recognitionRef.current?.stop()
+      } catch {
+        /* intentionally ignored */
+      }
 
       const userMsgId = Date.now()
       setMessages((prev) => [...prev, { id: userMsgId, text: trimmed, sender: 'user' }])
@@ -254,6 +284,11 @@ export function FloatingChat() {
   const handleClose = () => {
     setIsOpen(false)
     stopReading()
+    try {
+      recognitionRef.current?.stop()
+    } catch {
+      /* intentionally ignored */
+    }
     if (abortRef.current) {
       abortRef.current.abort()
     }
@@ -316,7 +351,7 @@ export function FloatingChat() {
                   {msg.sender === 'bot' && msg.text && (
                     <button
                       onClick={() => toggleReadAloud(msg.id, msg.text)}
-                      className="ml-2 inline-flex items-center justify-center align-middle p-1.5 rounded-md bg-gold/15 text-gold hover:bg-gold hover:text-white transition-colors shrink-0"
+                      className="ml-2 inline-flex items-center justify-center align-middle p-1.5 rounded-md bg-gold text-white hover:bg-gold/80 transition-colors shrink-0 shadow-sm"
                       title={readingMessageId === msg.id ? 'Parar leitura' : 'Ouvir mensagem'}
                     >
                       {readingMessageId === msg.id ? (
@@ -358,19 +393,27 @@ export function FloatingChat() {
                 />
                 <button
                   type="button"
-                  onClick={toggleReadInputAloud}
-                  disabled={!inputValue.trim()}
+                  onClick={toggleSpeechRecognition}
+                  disabled={isTyping}
                   className={cn(
                     'absolute right-1.5 top-1/2 -translate-y-1/2 inline-flex items-center justify-center p-1.5 rounded-md transition-colors',
                     'disabled:opacity-30 disabled:cursor-not-allowed',
-                    'bg-gold text-white hover:bg-gold/80',
+                    isListening
+                      ? 'bg-red-500 text-white animate-pulse'
+                      : 'bg-elegant text-white hover:bg-elegant/80',
                   )}
-                  title={isReadingInput ? 'Parar leitura' : 'Ouvir pergunta'}
+                  title={
+                    !speechSupported
+                      ? 'Entrada por voz não suportada neste navegador'
+                      : isListening
+                        ? 'Parar captura de voz'
+                        : 'Falar sua pergunta'
+                  }
                 >
-                  {isReadingInput ? (
-                    <Square className="w-4 h-4 fill-current animate-pulse" />
+                  {isListening ? (
+                    <Square className="w-4 h-4 fill-current" />
                   ) : (
-                    <Volume2 className="w-4 h-4" />
+                    <Mic className="w-4 h-4" />
                   )}
                 </button>
               </div>
