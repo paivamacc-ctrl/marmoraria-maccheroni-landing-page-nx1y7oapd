@@ -17,6 +17,25 @@ const MESSAGE_FONT_SIZE = '1.05rem'
 const HEADER_FONT_SIZE = '1.05rem'
 const PLACEHOLDER_FONT_SIZE = '1.05rem'
 
+function renderHighlightedText(text: string) {
+  const parts = text.split(/(==[^=]+==)/g)
+  return parts.map((part, i) => {
+    if (part.startsWith('==') && part.endsWith('==') && part.length > 4) {
+      const content = part.slice(2, -2)
+      return (
+        <mark
+          key={i}
+          className="bg-yellow-300 text-elegant px-1 rounded-sm font-semibold"
+          style={{ backgroundColor: '#fffb00' }}
+        >
+          {content}
+        </mark>
+      )
+    }
+    return <span key={i}>{part}</span>
+  })
+}
+
 function selectPtBrFemaleVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null {
   if (voices.length === 0) return null
 
@@ -99,7 +118,8 @@ export function FloatingChat() {
 
       window.speechSynthesis.cancel()
 
-      const utterance = new SpeechSynthesisUtterance(text)
+      const cleanText = text.replace(/==([^=]+)==/g, '$1')
+      const utterance = new SpeechSynthesisUtterance(cleanText)
       const voices = window.speechSynthesis.getVoices()
       const selectedVoice = selectPtBrFemaleVoice(voices)
       if (selectedVoice) {
@@ -108,8 +128,8 @@ export function FloatingChat() {
       } else {
         utterance.lang = 'pt-BR'
       }
-      utterance.rate = 1.0
-      utterance.pitch = 1.1
+      utterance.rate = 0.9
+      utterance.pitch = 1.15
 
       utterance.onend = () => {
         currentUtteranceRef.current = null
@@ -237,26 +257,31 @@ export function FloatingChat() {
                   )}
                   style={{ fontSize: MESSAGE_FONT_SIZE }}
                 >
-                  {msg.text ||
-                    (msg.sender === 'bot' && isTyping ? (
-                      <span className="flex gap-1 items-center">
-                        <span className="w-1.5 h-1.5 bg-grey rounded-full animate-bounce" />
-                        <span className="w-1.5 h-1.5 bg-grey rounded-full animate-bounce delay-100" />
-                        <span className="w-1.5 h-1.5 bg-grey rounded-full animate-bounce delay-200" />
-                      </span>
+                  {msg.text ? (
+                    msg.sender === 'bot' ? (
+                      renderHighlightedText(msg.text)
                     ) : (
-                      ''
-                    ))}
+                      msg.text
+                    )
+                  ) : msg.sender === 'bot' && isTyping ? (
+                    <span className="flex gap-1 items-center">
+                      <span className="w-1.5 h-1.5 bg-grey rounded-full animate-bounce" />
+                      <span className="w-1.5 h-1.5 bg-grey rounded-full animate-bounce delay-100" />
+                      <span className="w-1.5 h-1.5 bg-grey rounded-full animate-bounce delay-200" />
+                    </span>
+                  ) : (
+                    ''
+                  )}
                   {msg.sender === 'bot' && msg.text && (
                     <button
                       onClick={() => toggleReadAloud(msg.id, msg.text)}
-                      className="ml-2 inline-flex items-center justify-center align-middle p-1 rounded text-grey hover:text-gold transition-colors"
+                      className="ml-2 inline-flex items-center justify-center align-middle p-1.5 rounded-md bg-gold/15 text-gold hover:bg-gold hover:text-white transition-colors shrink-0"
                       title={readingMessageId === msg.id ? 'Parar leitura' : 'Ouvir mensagem'}
                     >
                       {readingMessageId === msg.id ? (
-                        <Square className="w-4 h-4 fill-current animate-pulse" />
+                        <Square className="w-5 h-5 fill-current animate-pulse" />
                       ) : (
-                        <Volume2 className="w-4 h-4" />
+                        <Volume2 className="w-5 h-5" />
                       )}
                     </button>
                   )}
