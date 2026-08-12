@@ -68,6 +68,7 @@ export function FloatingChat() {
   const [inputValue, setInputValue] = useState('')
   const [conversationId, setConversationId] = useState<string | null>(null)
   const [readingMessageId, setReadingMessageId] = useState<number | null>(null)
+  const [isReadingInput, setIsReadingInput] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const abortRef = useRef<AbortController | null>(null)
@@ -105,6 +106,7 @@ export function FloatingChat() {
     }
     currentUtteranceRef.current = null
     setReadingMessageId(null)
+    setIsReadingInput(false)
   }, [])
 
   const toggleReadAloud = useCallback(
@@ -128,8 +130,8 @@ export function FloatingChat() {
       } else {
         utterance.lang = 'pt-BR'
       }
-      utterance.rate = 0.9
-      utterance.pitch = 1.15
+      utterance.rate = 1.15
+      utterance.pitch = 1.0
 
       utterance.onend = () => {
         currentUtteranceRef.current = null
@@ -146,6 +148,45 @@ export function FloatingChat() {
     },
     [readingMessageId, stopReading],
   )
+
+  const toggleReadInputAloud = useCallback(() => {
+    const trimmed = inputValue.trim()
+    if (!trimmed) return
+
+    if (isReadingInput) {
+      stopReading()
+      return
+    }
+
+    if (typeof window === 'undefined' || !window.speechSynthesis) return
+
+    window.speechSynthesis.cancel()
+
+    const utterance = new SpeechSynthesisUtterance(trimmed)
+    const voices = window.speechSynthesis.getVoices()
+    const selectedVoice = selectPtBrFemaleVoice(voices)
+    if (selectedVoice) {
+      utterance.voice = selectedVoice
+      utterance.lang = selectedVoice.lang
+    } else {
+      utterance.lang = 'pt-BR'
+    }
+    utterance.rate = 1.15
+    utterance.pitch = 1.0
+
+    utterance.onend = () => {
+      currentUtteranceRef.current = null
+      setIsReadingInput(false)
+    }
+    utterance.onerror = () => {
+      currentUtteranceRef.current = null
+      setIsReadingInput(false)
+    }
+
+    currentUtteranceRef.current = utterance
+    setIsReadingInput(true)
+    window.speechSynthesis.speak(utterance)
+  }, [inputValue, isReadingInput, stopReading])
 
   const sendMessage = useCallback(
     async (text: string) => {
@@ -305,15 +346,34 @@ export function FloatingChat() {
               </div>
             )}
             <form onSubmit={handleSubmit} className="flex gap-2">
-              <Input
-                ref={inputRef}
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Digite sua pergunta..."
-                disabled={isTyping}
-                className="flex-1"
-                style={{ fontSize: PLACEHOLDER_FONT_SIZE }}
-              />
+              <div className="relative flex-1">
+                <Input
+                  ref={inputRef}
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder="Digite sua pergunta..."
+                  disabled={isTyping}
+                  className="flex-1 pr-10"
+                  style={{ fontSize: PLACEHOLDER_FONT_SIZE }}
+                />
+                <button
+                  type="button"
+                  onClick={toggleReadInputAloud}
+                  disabled={!inputValue.trim()}
+                  className={cn(
+                    'absolute right-1.5 top-1/2 -translate-y-1/2 inline-flex items-center justify-center p-1.5 rounded-md transition-colors',
+                    'disabled:opacity-30 disabled:cursor-not-allowed',
+                    'bg-gold text-white hover:bg-gold/80',
+                  )}
+                  title={isReadingInput ? 'Parar leitura' : 'Ouvir pergunta'}
+                >
+                  {isReadingInput ? (
+                    <Square className="w-4 h-4 fill-current animate-pulse" />
+                  ) : (
+                    <Volume2 className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
               <button
                 type="submit"
                 disabled={!inputValue.trim() || isTyping}
